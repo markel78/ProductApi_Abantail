@@ -1,0 +1,6 @@
+{
+  "ProductApi.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Repositorios\\ProductApi\\ProductApi.Application",
+  "ProductApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Repositorios\\ProductApi\\ProductApi",
+  "ProductApi.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Repositorios\\ProductApi\\ProductApi.Domain",
+  "ProductApi.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Repositorios\\ProductApi\\ProductApi.Infrastructure"
+}

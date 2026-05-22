@@ -1,0 +1,15 @@
+C:\Repositorios\ProductApi\ProductApi.Application\bin\Debug\net10.0\ProductApi.Application.deps.json
+C:\Repositorios\ProductApi\ProductApi.Application\bin\Debug\net10.0\ProductApi.Application.dll
+C:\Repositorios\ProductApi\ProductApi.Application\bin\Debug\net10.0\ProductApi.Application.pdb
+C:\Repositorios\ProductApi\ProductApi.Application\bin\Debug\net10.0\ProductApi.Domain.dll
+C:\Repositorios\ProductApi\ProductApi.Application\bin\Debug\net10.0\ProductApi.Domain.pdb
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductApi.Application.csproj.AssemblyReference.cache
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductApi.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductApi.Application.AssemblyInfoInputs.cache
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductApi.Application.AssemblyInfo.cs
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductApi.Application.csproj.CoreCompileInputs.cache
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductA.E443A747.Up2Date
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductApi.Application.dll
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\refint\ProductApi.Application.dll
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductApi.Application.pdb
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ref\ProductApi.Application.dll

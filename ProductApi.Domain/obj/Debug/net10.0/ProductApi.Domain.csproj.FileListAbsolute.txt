@@ -1,0 +1,11 @@
+C:\Repositorios\ProductApi\ProductApi.Domain\bin\Debug\net10.0\ProductApi.Domain.deps.json
+C:\Repositorios\ProductApi\ProductApi.Domain\bin\Debug\net10.0\ProductApi.Domain.dll
+C:\Repositorios\ProductApi\ProductApi.Domain\bin\Debug\net10.0\ProductApi.Domain.pdb
+C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ProductApi.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ProductApi.Domain.AssemblyInfoInputs.cache
+C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ProductApi.Domain.AssemblyInfo.cs
+C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ProductApi.Domain.csproj.CoreCompileInputs.cache
+C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ProductApi.Domain.dll
+C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\refint\ProductApi.Domain.dll
+C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ProductApi.Domain.pdb
+C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ref\ProductApi.Domain.dll

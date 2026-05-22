@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Elementos de la solución/">
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="ProductApi.Application/ProductApi.Application.csproj" />
+    <Project Path="ProductApi.Domain/ProductApi.Domain.csproj" />
+    <Project Path="ProductApi.Infrastructure/ProductApi.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="ProductApi.Tests/ProductApi.Tests.csproj" Id="8e14a0f2-d7aa-4ccf-b396-751c958e2461" />
+  </Folder>
+  <Project Path="ProductApi/ProductApi.csproj" />
+</Solution>
