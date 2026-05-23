@@ -3,9 +3,6 @@ using System.Text.Json;
 using ProductApi.Domain.Exceptions;
 
 namespace ProductApi.Middleware;
-
-// Patrón Middleware: captura todas las excepciones no controladas
-// y devuelve siempre JSON consistente
 public sealed class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;

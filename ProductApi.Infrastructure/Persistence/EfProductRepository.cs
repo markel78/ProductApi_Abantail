@@ -5,11 +5,6 @@ using ProductApi.Domain.Exceptions;
 using ProductApi.Domain.Interfaces;
 
 namespace ProductApi.Infrastructure.Persistence;
-
-// Para activar: cambiar en Program.cs
-// AddScoped<IProductRepository, InMemoryProductRepository>()
-// por
-// AddScoped<IProductRepository, EfProductRepository>()
 public sealed class EfProductRepository : IProductRepository
 {
     private readonly AppDbContext _db;
@@ -52,13 +47,13 @@ public sealed class EfProductRepository : IProductRepository
 
     public async Task<Product?> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        _logger.LogInformation("EfRepository.GetById → id={Id}", id);
+        _logger.LogInformation("EfRepository.GetById --> id={Id}", id);
         return await _db.Products.FindAsync([id], ct);
     }
 
     public async Task<Product> CreateAsync(Product product, CancellationToken ct = default)
     {
-        _logger.LogInformation("EfRepository.Create → name={Name}", product.Name);
+        _logger.LogInformation("EfRepository.Create --> name={Name}", product.Name);
         _db.Products.Add(product);
         await _db.SaveChangesAsync(ct);
         return product;
@@ -66,7 +61,7 @@ public sealed class EfProductRepository : IProductRepository
 
     public async Task<Product?> UpdateAsync(Product product, CancellationToken ct = default)
     {
-        _logger.LogInformation("EfRepository.Update → id={Id}", product.Id);
+        _logger.LogInformation("EfRepository.Update --> id={Id}", product.Id);
         var existing = await _db.Products.FindAsync([product.Id], ct);
         if (existing is null) return null;
 
@@ -88,7 +83,7 @@ public sealed class EfProductRepository : IProductRepository
 
     public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
     {
-        _logger.LogInformation("EfRepository.Delete → id={Id}", id);
+        _logger.LogInformation("EfRepository.Delete --> id={Id}", id);
         var existing = await _db.Products.FindAsync([id], ct);
         if (existing is null) return false;
 

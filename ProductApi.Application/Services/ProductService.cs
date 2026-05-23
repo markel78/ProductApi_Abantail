@@ -7,18 +7,10 @@ using ProductApi.Domain.Interfaces;
 
 namespace ProductApi.Application.Services;
 
-// SOLID - SRP (Single Responsibility Principle):
-// ProductService tiene una única responsabilidad: orquestar los casos de uso
-// de producto. No sabe cómo se persisten los datos ni cómo se serializan.
-//
-// SOLID - OCP (Open/Closed Principle):
-// Para añadir un nuevo caso de uso (ej. ImportarProductosAsync) basta con
-// añadir el método a IProductService e implementarlo aquí, sin modificar
-// los controladores ni el repositorio.
-//
-// Patrón Service Layer: separa la lógica de negocio del controlador HTTP.
-// Patrón Mapper interno (ToDto): convierte entidades de dominio en DTOs
-// de salida. Sustituible por AutoMapper sin tocar el resto del código.
+// SRP: este servicio solo orquesta los casos de uso, no persiste ni serializa
+// OCP: para añadir funcionalidad nueva solo añado métodos, no toco lo existente
+// Patrón Service Layer: la lógica de negocio vive aquí, fuera del controlador
+// ToDto: convierte la entidad interna en lo que el cliente ve
 public sealed class ProductService : IProductService
 {
     private readonly IProductRepository _repo;
@@ -34,7 +26,7 @@ public sealed class ProductService : IProductService
         int page, int pageSize, string? nameFilter,
         string? sortBy, bool sortDescending, CancellationToken ct = default)
     {
-        _logger.LogInformation("GetAll → page={Page} size={Size} filter={Filter}",
+        _logger.LogInformation("GetAll --> page={Page} size={Size} filter={Filter}",
             page, pageSize, nameFilter);
 
         var (items, total) = await _repo.GetAllAsync(
@@ -51,7 +43,7 @@ public sealed class ProductService : IProductService
 
     public async Task<ProductResponseDto> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        _logger.LogInformation("GetById → id={Id}", id);
+        _logger.LogInformation("GetById --> id={Id}", id);
         var product = await _repo.GetByIdAsync(id, ct)
             ?? throw new NotFoundException(nameof(Product), id);
         return ToDto(product);
@@ -59,7 +51,7 @@ public sealed class ProductService : IProductService
 
     public async Task<ProductResponseDto> CreateAsync(CreateProductDto dto, CancellationToken ct = default)
     {
-        _logger.LogInformation("Create → name={Name}", dto.Name);
+        _logger.LogInformation("Create --> name={Name}", dto.Name);
         var product = new Product
         {
             Name = dto.Name,
@@ -72,7 +64,7 @@ public sealed class ProductService : IProductService
 
     public async Task<ProductResponseDto> UpdateAsync(int id, UpdateProductDto dto, CancellationToken ct = default)
     {
-        _logger.LogInformation("Update → id={Id}", id);
+        _logger.LogInformation("Update --> id={Id}", id);
         var existing = await _repo.GetByIdAsync(id, ct)
             ?? throw new NotFoundException(nameof(Product), id);
 
@@ -88,7 +80,7 @@ public sealed class ProductService : IProductService
 
     public async Task<ProductResponseDto> PatchAsync(int id, PatchProductDto dto, CancellationToken ct = default)
     {
-        _logger.LogInformation("Patch → id={Id}", id);
+        _logger.LogInformation("Patch --> id={Id}", id);
         var existing = await _repo.GetByIdAsync(id, ct)
             ?? throw new NotFoundException(nameof(Product), id);
 
@@ -104,12 +96,18 @@ public sealed class ProductService : IProductService
 
     public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
-        _logger.LogInformation("Delete → id={Id}", id);
+        _logger.LogInformation("Delete --> id={Id}", id);
         var deleted = await _repo.DeleteAsync(id, ct);
         if (!deleted) throw new NotFoundException(nameof(Product), id);
     }
 
-    // Patrón Mapper interno — cuando crezcas puedes extraerlo a AutoMapper
+    public async Task<IEnumerable<ProductResponseDto>> SearchByNameAsync(string name, CancellationToken ct = default)
+    {
+        _logger.LogInformation("SearchByName --> name={Name}", name);
+        var (items, _) = await _repo.GetAllAsync(1, int.MaxValue, name, null, false, ct);
+        return items.Select(ToDto);
+    }
+
     private static ProductResponseDto ToDto(Product p) => new(
         Id: p.Id,
         Name: p.Name,

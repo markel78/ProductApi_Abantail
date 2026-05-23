@@ -5,9 +5,6 @@ using ProductApi.Domain.Exceptions;
 using ProductApi.Infrastructure.Repositories;
 
 namespace ProductApi.Tests;
-
-// El repositorio en memoria usa estado estático (_store, _nextId).
-// Cada test necesita un estado limpio → usamos IAsyncLifetime para resetear.
 public class InMemoryProductRepositoryTests : IAsyncLifetime
 {
     private readonly InMemoryProductRepository _sut;
@@ -24,7 +21,6 @@ public class InMemoryProductRepositoryTests : IAsyncLifetime
 
     private static Task ResetStoreAsync()
     {
-        // Accedemos vía reflexión para limpiar el campo estático privado
         var storeField = typeof(InMemoryProductRepository)
             .GetField("_store", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
         var nextIdField = typeof(InMemoryProductRepository)
@@ -36,13 +32,8 @@ public class InMemoryProductRepositoryTests : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    // ── Helper ──────────────────────────────────────────────────────────────
     private Task<Product> SeedAsync(string name = "Widget", decimal price = 9.99m, int qty = 5)
         => _sut.CreateAsync(new Product { Name = name, Price = price, Quantity = qty });
-
-    // ════════════════════════════════════════════════════════════════════════
-    // CreateAsync
-    // ════════════════════════════════════════════════════════════════════════
 
     [Fact]
     public async Task CreateAsync_AssignsIncrementalId()
@@ -60,7 +51,7 @@ public class InMemoryProductRepositoryTests : IAsyncLifetime
         var product = await SeedAsync();
 
         Assert.NotNull(product.RowVersion);
-        Assert.Equal(8, product.RowVersion.Length); // long → 8 bytes
+        Assert.Equal(8, product.RowVersion.Length);
     }
 
     [Fact]
@@ -73,10 +64,6 @@ public class InMemoryProductRepositoryTests : IAsyncLifetime
         Assert.Equal(1, total);
         Assert.Equal("Widget", items.Single().Name);
     }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // GetByIdAsync
-    // ════════════════════════════════════════════════════════════════════════
 
     [Fact]
     public async Task GetByIdAsync_ExistingId_ReturnsProduct()
@@ -99,10 +86,6 @@ public class InMemoryProductRepositoryTests : IAsyncLifetime
 
         Assert.Null(result);
     }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // GetAllAsync — paginación
-    // ════════════════════════════════════════════════════════════════════════
 
     [Fact]
     public async Task GetAllAsync_ReturnsTotalCount_Correctly()
@@ -134,12 +117,8 @@ public class InMemoryProductRepositoryTests : IAsyncLifetime
 
         var (items, _) = await _sut.GetAllAsync(3, 2, null, null, false);
 
-        Assert.Single(items); // 5 items, pageSize 2 → página 3 tiene 1
+        Assert.Single(items);
     }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // GetAllAsync — filtro
-    // ════════════════════════════════════════════════════════════════════════
 
     [Fact]
     public async Task GetAllAsync_NameFilter_ReturnMatchingProducts()
@@ -175,10 +154,6 @@ public class InMemoryProductRepositoryTests : IAsyncLifetime
         Assert.Equal(0, total);
         Assert.Empty(items);
     }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // GetAllAsync — ordenación
-    // ════════════════════════════════════════════════════════════════════════
 
     [Fact]
     public async Task GetAllAsync_SortByName_Ascending_ReturnsSorted()
@@ -218,10 +193,6 @@ public class InMemoryProductRepositoryTests : IAsyncLifetime
 
         Assert.Equal(ids.OrderBy(x => x).ToList(), ids);
     }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // UpdateAsync
-    // ════════════════════════════════════════════════════════════════════════
 
     [Fact]
     public async Task UpdateAsync_ValidRowVersion_UpdatesProduct()
@@ -281,10 +252,6 @@ public class InMemoryProductRepositoryTests : IAsyncLifetime
         Assert.Null(result);
     }
 
-    // ════════════════════════════════════════════════════════════════════════
-    // DeleteAsync
-    // ════════════════════════════════════════════════════════════════════════
-
     [Fact]
     public async Task DeleteAsync_ExistingId_ReturnsTrueAndRemovesProduct()
     {
@@ -316,10 +283,6 @@ public class InMemoryProductRepositoryTests : IAsyncLifetime
         var remaining = await _sut.GetByIdAsync(p2.Id);
         Assert.NotNull(remaining);
     }
-
-    // ════════════════════════════════════════════════════════════════════════
-    // ExistsAsync
-    // ════════════════════════════════════════════════════════════════════════
 
     [Fact]
     public async Task ExistsAsync_ExistingId_ReturnsTrue()

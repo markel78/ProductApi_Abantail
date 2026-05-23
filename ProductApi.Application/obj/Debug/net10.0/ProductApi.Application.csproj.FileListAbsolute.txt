@@ -13,3 +13,4 @@ C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductApi.A
 C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\refint\ProductApi.Application.dll
 C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductApi.Application.pdb
 C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ref\ProductApi.Application.dll
+C:\Repositorios\ProductApi\ProductApi.Application\obj\Debug\net10.0\ProductApi.Application.sourcelink.json

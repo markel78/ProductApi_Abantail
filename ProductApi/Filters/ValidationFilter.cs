@@ -3,13 +3,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace ProductApi.Filters;
 
-// SOLID - SRP (Single Responsibility Principle):
-// Responsabilidad única: interceptar peticiones con modelo inválido
-// y devolver 400 antes de que lleguen al controlador.
-//
-// Patrón Action Filter: separa la validación transversal del código
-// de negocio. Se registra una vez en Program.cs y aplica a todos
-// los endpoints automáticamente.
+// Antes de que la petición llegue al controlador compruebo que los datos son correctos
+// Si algo falla devuelvo un 400 con los errores, si todo ok dejo pasar
 public sealed class ValidationFilter : IActionFilter
 {
     public void OnActionExecuting(ActionExecutingContext context)

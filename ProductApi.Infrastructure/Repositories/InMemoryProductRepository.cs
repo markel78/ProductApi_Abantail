@@ -5,14 +5,11 @@ using ProductApi.Domain.Interfaces;
 
 namespace ProductApi.Infrastructure.Repositories;
 
-// Patrón Repository: encapsula toda la lógica de acceso a datos detrás
-// de una interfaz. El dominio y la aplicación no saben si los datos
-// viven en memoria, SQL Server, PostgreSQL u otro origen.
-//
-// SOLID - LSP (Liskov Substitution Principle):
-// InMemoryProductRepository puede sustituirse por EfProductRepository
-// en cualquier contexto sin que el comportamiento observable cambie.
-// Ambas implementan IProductRepository con el mismo contrato.
+// Repositorio en memoria — almacena los productos en una lista estática
+// Si mañana quiero usar SQL Server, creo EfProductRepository con la misma
+// interfaz y cambio una línea en Program.cs. El resto no se toca.
+// LSP: InMemoryProductRepository y EfProductRepository son intercambiables
+// porque las dos cumplen el mismo contrato — IProductRepository
 public sealed class InMemoryProductRepository : IProductRepository
 {
     private static readonly List<Product> _store = [];
@@ -64,7 +61,7 @@ public sealed class InMemoryProductRepository : IProductRepository
 
     public Task<Product?> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        _logger.LogInformation("Repository.GetById → id={Id}", id);
+        _logger.LogInformation("Repository.GetById --> id={Id}", id);
         lock (_lock)
         {
             var product = _store.FirstOrDefault(p => p.Id == id);
@@ -74,7 +71,7 @@ public sealed class InMemoryProductRepository : IProductRepository
 
     public Task<Product> CreateAsync(Product product, CancellationToken ct = default)
     {
-        _logger.LogInformation("Repository.Create → name={Name}", product.Name);
+        _logger.LogInformation("Repository.Create --> name={Name}", product.Name);
         lock (_lock)
         {
             product.Id = _nextId++;
@@ -86,7 +83,7 @@ public sealed class InMemoryProductRepository : IProductRepository
 
     public Task<Product?> UpdateAsync(Product product, CancellationToken ct = default)
     {
-        _logger.LogInformation("Repository.Update → id={Id}", product.Id);
+        _logger.LogInformation("Repository.Update --> id={Id}", product.Id);
         lock (_lock)
         {
             var existing = _store.FirstOrDefault(p => p.Id == product.Id);
@@ -107,7 +104,7 @@ public sealed class InMemoryProductRepository : IProductRepository
 
     public Task<bool> DeleteAsync(int id, CancellationToken ct = default)
     {
-        _logger.LogInformation("Repository.Delete → id={Id}", id);
+        _logger.LogInformation("Repository.Delete --> id={Id}", id);
         lock (_lock)
         {
             var existing = _store.FirstOrDefault(p => p.Id == id);

@@ -4,7 +4,6 @@ using System.Text;
 
 namespace ProductApi.Domain.Entities
 {
-    // sealed --> Nadie puede heredar
     public sealed class Product
     {
         public int Id { get; set; }

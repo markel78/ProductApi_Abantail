@@ -9,3 +9,4 @@ C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ProductApi.Domain
 C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\refint\ProductApi.Domain.dll
 C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ProductApi.Domain.pdb
 C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ref\ProductApi.Domain.dll
+C:\Repositorios\ProductApi\ProductApi.Domain\obj\Debug\net10.0\ProductApi.Domain.sourcelink.json

@@ -469,3 +469,4 @@ C:\Repositorios\ProductApi\ProductApi.Tests\bin\Debug\net10.0\Swashbuckle.AspNet
 C:\Repositorios\ProductApi\ProductApi.Tests\bin\Debug\net10.0\ProductApi.dll
 C:\Repositorios\ProductApi\ProductApi.Tests\bin\Debug\net10.0\ProductApi.pdb
 C:\Repositorios\ProductApi\ProductApi.Tests\obj\Debug\net10.0\MvcTestingAppManifest.json
+C:\Repositorios\ProductApi\ProductApi.Tests\obj\Debug\net10.0\ProductApi.Tests.sourcelink.json

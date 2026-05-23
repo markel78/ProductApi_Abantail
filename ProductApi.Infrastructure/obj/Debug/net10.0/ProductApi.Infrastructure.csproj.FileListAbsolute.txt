@@ -13,3 +13,4 @@ C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductAp
 C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\refint\ProductApi.Infrastructure.dll
 C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductApi.Infrastructure.pdb
 C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ref\ProductApi.Infrastructure.dll
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductApi.Infrastructure.sourcelink.json

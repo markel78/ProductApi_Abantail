@@ -6,7 +6,6 @@ using ProductApi.Filters;
 using ProductApi.Infrastructure.Repositories;
 using ProductApi.Middleware;
 
-// ── Para activar EF Core, descomentar estas líneas:
 // using Microsoft.EntityFrameworkCore;
 // using ProductApi.Infrastructure.Persistence;
 
@@ -50,11 +49,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddHealthChecks();
 
 // ── Inyección de dependencias ──────────────────────────────
-// Repositorio activo: en memoria (sin base de datos)
 builder.Services.AddScoped<IProductRepository, InMemoryProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
-// ── Para activar EF Core, sustituir las dos líneas anteriores por:
 // builder.Services.AddDbContext<AppDbContext>(options =>
 //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // builder.Services.AddScoped<IProductRepository, EfProductRepository>();

@@ -8,13 +8,9 @@ namespace ProductApi.Domain.Interfaces
     // SOLID - DIP (Dependency Inversion Principle):
     // Las capas superiores (Application) dependen de esta abstracción,
     // nunca de la implementación concreta (InMemoryProductRepository).
-    // Cambiar a EF Core = crear EfProductRepository : IProductRepository
-    // y cambiar una línea en Program.cs. El resto del código no se toca.
     //
     // SOLID - ISP (Interface Segregation Principle):
-    // La interfaz expone solo las operaciones que los consumidores necesitan.
-    // Si en el futuro un repositorio de solo lectura no necesita Create/Update/Delete,
-    // se puede segregar en IProductReadRepository + IProductWriteRepository.
+    // La interfaz expone solo las operaciones que los consumidores necesitan
     public interface IProductRepository
     {
         Task<(IEnumerable<Product> Items, int TotalCount)> GetAllAsync(

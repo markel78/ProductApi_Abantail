@@ -13,5 +13,6 @@ namespace ProductApi.Application.Interfaces
         Task<ProductResponseDto> UpdateAsync(int id, UpdateProductDto dto, CancellationToken ct = default);
         Task<ProductResponseDto> PatchAsync(int id, PatchProductDto dto, CancellationToken ct = default);
         Task DeleteAsync(int id, CancellationToken ct = default);
+        Task<IEnumerable<ProductResponseDto>> SearchByNameAsync(string name, CancellationToken ct = default);
     }
 }

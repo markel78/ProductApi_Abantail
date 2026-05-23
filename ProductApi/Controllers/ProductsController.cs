@@ -91,4 +91,20 @@ public sealed class ProductsController : ControllerBase
         await _service.DeleteAsync(id, ct);
         return NoContent();
     }
+
+    // GET /api/v1/products/search?name=teclado
+    [HttpGet("search")]
+    [ProducesResponseType(typeof(IEnumerable<ProductResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SearchByName(
+        [FromQuery] string name,
+        CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return BadRequest(new { errorCode = "VALIDATION_ERROR", message = "El nombre no puede estar vacío." });
+
+        _logger.LogInformation("GET /products/search?name={Name}", name);
+        var results = await _service.SearchByNameAsync(name, ct);
+        return Ok(results);
+    }
 }
