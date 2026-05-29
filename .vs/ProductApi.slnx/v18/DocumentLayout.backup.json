@@ -1,12 +1,122 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Repositorios\\ProductApi\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8E14A0F2-D7AA-4CCF-B396-751C958E2461}|ProductApi.Tests\\ProductApi.Tests.csproj|c:\\repositorios\\productapi\\productapi.tests\\validationfiltertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8E14A0F2-D7AA-4CCF-B396-751C958E2461}|ProductApi.Tests\\ProductApi.Tests.csproj|solutionrelative:productapi.tests\\validationfiltertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E14A0F2-D7AA-4CCF-B396-751C958E2461}|ProductApi.Tests\\ProductApi.Tests.csproj|c:\\repositorios\\productapi\\productapi.tests\\productservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8E14A0F2-D7AA-4CCF-B396-751C958E2461}|ProductApi.Tests\\ProductApi.Tests.csproj|solutionrelative:productapi.tests\\productservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E14A0F2-D7AA-4CCF-B396-751C958E2461}|ProductApi.Tests\\ProductApi.Tests.csproj|c:\\repositorios\\productapi\\productapi.tests\\inmemoryproductrepositorytests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8E14A0F2-D7AA-4CCF-B396-751C958E2461}|ProductApi.Tests\\ProductApi.Tests.csproj|solutionrelative:productapi.tests\\inmemoryproductrepositorytests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8E14A0F2-D7AA-4CCF-B396-751C958E2461}|ProductApi.Tests\\ProductApi.Tests.csproj|c:\\repositorios\\productapi\\productapi.tests\\productapi.tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{8E14A0F2-D7AA-4CCF-B396-751C958E2461}|ProductApi.Tests\\ProductApi.Tests.csproj|solutionrelative:productapi.tests\\productapi.tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E962D6F7-FF83-9B7F-B7BE-F24219127C2F}|ProductApi\\ProductApi.csproj|c:\\repositorios\\productapi\\productapi\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E962D6F7-FF83-9B7F-B7BE-F24219127C2F}|ProductApi\\ProductApi.csproj|solutionrelative:productapi\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E962D6F7-FF83-9B7F-B7BE-F24219127C2F}|ProductApi\\ProductApi.csproj|c:\\repositorios\\productapi\\productapi\\filters\\validationfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E962D6F7-FF83-9B7F-B7BE-F24219127C2F}|ProductApi\\ProductApi.csproj|solutionrelative:productapi\\filters\\validationfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ValidationFilterTests.cs",
+              "DocumentMoniker": "C:\\Repositorios\\ProductApi\\ProductApi.Tests\\ValidationFilterTests.cs",
+              "RelativeDocumentMoniker": "ProductApi.Tests\\ValidationFilterTests.cs",
+              "ToolTip": "C:\\Repositorios\\ProductApi\\ProductApi.Tests\\ValidationFilterTests.cs",
+              "RelativeToolTip": "ProductApi.Tests\\ValidationFilterTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T16:32:53.751Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ProductServiceTests.cs",
+              "DocumentMoniker": "C:\\Repositorios\\ProductApi\\ProductApi.Tests\\ProductServiceTests.cs",
+              "RelativeDocumentMoniker": "ProductApi.Tests\\ProductServiceTests.cs",
+              "ToolTip": "C:\\Repositorios\\ProductApi\\ProductApi.Tests\\ProductServiceTests.cs",
+              "RelativeToolTip": "ProductApi.Tests\\ProductServiceTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T16:32:52.992Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "InMemoryProductRepositoryTests.cs",
+              "DocumentMoniker": "C:\\Repositorios\\ProductApi\\ProductApi.Tests\\InMemoryProductRepositoryTests.cs",
+              "RelativeDocumentMoniker": "ProductApi.Tests\\InMemoryProductRepositoryTests.cs",
+              "ToolTip": "C:\\Repositorios\\ProductApi\\ProductApi.Tests\\InMemoryProductRepositoryTests.cs",
+              "RelativeToolTip": "ProductApi.Tests\\InMemoryProductRepositoryTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T16:32:51.283Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ProductApi.Tests",
+              "DocumentMoniker": "C:\\Repositorios\\ProductApi\\ProductApi.Tests\\ProductApi.Tests.csproj",
+              "RelativeDocumentMoniker": "ProductApi.Tests\\ProductApi.Tests.csproj",
+              "ToolTip": "C:\\Repositorios\\ProductApi\\ProductApi.Tests\\ProductApi.Tests.csproj",
+              "RelativeToolTip": "ProductApi.Tests\\ProductApi.Tests.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-28T16:32:49.92Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ValidationFilter.cs",
+              "DocumentMoniker": "C:\\Repositorios\\ProductApi\\ProductApi\\Filters\\ValidationFilter.cs",
+              "RelativeDocumentMoniker": "ProductApi\\Filters\\ValidationFilter.cs",
+              "ToolTip": "C:\\Repositorios\\ProductApi\\ProductApi\\Filters\\ValidationFilter.cs",
+              "RelativeToolTip": "ProductApi\\Filters\\ValidationFilter.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T16:32:31.191Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ProductsController.cs",
+              "DocumentMoniker": "C:\\Repositorios\\ProductApi\\ProductApi\\Controllers\\ProductsController.cs",
+              "RelativeDocumentMoniker": "ProductApi\\Controllers\\ProductsController.cs",
+              "ToolTip": "C:\\Repositorios\\ProductApi\\ProductApi\\Controllers\\ProductsController.cs",
+              "RelativeToolTip": "ProductApi\\Controllers\\ProductsController.cs",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAcwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T16:32:15.877Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

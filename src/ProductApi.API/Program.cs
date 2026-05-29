@@ -1,76 +1,80 @@
-using Microsoft.OpenApi.Models;
-using ProductApi.API.Extensions;
-using ProductApi.API.Middleware;
+using Microsoft.AspNetCore.Mvc;
+using ProductApi.Application.Interfaces;
+using ProductApi.Application.Services;
+using ProductApi.Domain.Interfaces;
+using ProductApi.Filters;
+using ProductApi.Infrastructure.Repositories;
+using ProductApi.Middleware;
+
+// using Microsoft.EntityFrameworkCore;
+// using ProductApi.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Controllers ──────────────────────────────────────────────────────────────
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-
-// ── Swagger / OpenAPI ─────────────────────────────────────────────────────────
-builder.Services.AddSwaggerGen(c =>
+// ── Controladores ──────────────────────────────────────────
+builder.Services.AddControllers(options =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title       = "Product API",
-        Version     = "v1",
-        Description = "API REST para gestión de productos con arquitectura en capas.",
-        Contact     = new OpenApiContact { Name = "Dev Team", Email = "dev@example.com" }
-    });
-
-    // Incluye comentarios XML de los controladores
-    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    if (File.Exists(xmlPath))
-        c.IncludeXmlComments(xmlPath);
+    options.Filters.Add<ValidationFilter>();
 });
 
-// ── Application services ──────────────────────────────────────────────────────
-builder.Services.AddApplicationServices();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 
-// ── CORS ──────────────────────────────────────────────────────────────────────
-builder.Services.AddCorsPolicy(builder.Configuration);
+// ── Swagger / OpenAPI ──────────────────────────────────────
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new()
+    {
+        Title = "ProductApi",
+        Version = "v1",
+        Description = "API CRUD de productos con arquitectura en capas"
+    });
+});
 
-// ── Health Checks ─────────────────────────────────────────────────────────────
+// ── CORS ───────────────────────────────────────────────────
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins(
+                builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+                ?? ["http://localhost:3000"])
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
+// ── Health Checks ──────────────────────────────────────────
 builder.Services.AddHealthChecks();
 
-// ── HTTPS ─────────────────────────────────────────────────────────────────────
+// ── Inyección de dependencias ──────────────────────────────
+builder.Services.AddScoped<IProductRepository, InMemoryProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
+// builder.Services.AddDbContext<AppDbContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// builder.Services.AddScoped<IProductRepository, EfProductRepository>();
+
+// ── HTTPS ──────────────────────────────────────────────────
 builder.Services.AddHttpsRedirection(options =>
 {
     options.HttpsPort = 7001;
 });
 
-// ── Logging ───────────────────────────────────────────────────────────────────
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
-
 var app = builder.Build();
 
-// ── Middleware pipeline ───────────────────────────────────────────────────────
-app.UseMiddleware<GlobalExceptionMiddleware>(); // 1. Captura excepciones globales
-
+// ── Pipeline ───────────────────────────────────────────────
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Product API v1");
-        c.RoutePrefix = string.Empty; // Swagger en la raíz
-    });
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProductApi v1"));
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
-app.UseCors("DefaultCors");
-app.UseAuthorization();
-
-// ── Health check endpoint ─────────────────────────────────────────────────────
+app.UseCors("AllowFrontend");
+app.MapControllers();
 app.MapHealthChecks("/health");
 
-app.MapControllers();
-
 app.Run();
-
-// Necesario para los tests de integración
-public partial class Program { }

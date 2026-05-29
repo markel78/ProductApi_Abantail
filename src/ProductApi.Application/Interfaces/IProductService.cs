@@ -1,17 +1,18 @@
-using ProductApi.Application.DTOs;
+﻿using ProductApi.Application.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace ProductApi.Application.Interfaces;
-
-/// <summary>
-/// Contrato del servicio de productos (use-cases).
-/// Principio S de SOLID: esta interfaz encapsula únicamente la lógica de negocio de productos.
-/// </summary>
-public interface IProductService
+namespace ProductApi.Application.Interfaces
 {
-    Task<PagedResult<ProductDto>> GetAllAsync(ProductQueryParams query, CancellationToken cancellationToken = default);
-    Task<ProductDto> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-    Task<ProductDto> CreateAsync(CreateProductDto dto, CancellationToken cancellationToken = default);
-    Task<ProductDto> UpdateAsync(int id, UpdateProductDto dto, CancellationToken cancellationToken = default);
-    Task<ProductDto> PatchAsync(int id, PatchProductDto dto, CancellationToken cancellationToken = default);
-    Task DeleteAsync(int id, CancellationToken cancellationToken = default);
+    public interface IProductService
+    {
+        Task<PagedResultDto<ProductResponseDto>> GetAllAsync(int page, int pageSize, string? nameFilter, string? sortBy, bool sortDescending, CancellationToken ct = default);
+        Task<ProductResponseDto> GetByIdAsync(int id, CancellationToken ct = default);
+        Task<ProductResponseDto> CreateAsync(CreateProductDto dto, CancellationToken ct = default);
+        Task<ProductResponseDto> UpdateAsync(int id, UpdateProductDto dto, CancellationToken ct = default);
+        Task<ProductResponseDto> PatchAsync(int id, PatchProductDto dto, CancellationToken ct = default);
+        Task DeleteAsync(int id, CancellationToken ct = default);
+        Task<IEnumerable<ProductResponseDto>> SearchByNameAsync(string name, CancellationToken ct = default);
+    }
 }

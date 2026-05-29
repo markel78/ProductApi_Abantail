@@ -1,28 +1,30 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
 namespace ProductApi.Domain.Exceptions;
 
-public class ProductNotFoundException : Exception
+public abstract class DomainException : Exception
 {
-    public int ProductId { get; }
-
-    public ProductNotFoundException(int id)
-        : base($"Product with id '{id}' was not found.")
-    {
-        ProductId = id;
-    }
+    protected DomainException(string message) : base(message) { }
 }
 
-public class ProductConcurrencyException : Exception
+// 404
+public sealed class NotFoundException : DomainException
 {
-    public ProductConcurrencyException(int id)
-        : base($"Concurrency conflict detected for product '{id}'. The resource was modified by another request.")
-    {
-    }
+    public NotFoundException(string resource, object key)
+        : base($"{resource} con id '{key}' no fue encontrado.") { }
 }
 
-public class DuplicateProductException : Exception
+// 409
+public sealed class ConcurrencyException : DomainException
 {
-    public DuplicateProductException(string name)
-        : base($"A product with the name '{name}' already exists.")
-    {
-    }
+    public ConcurrencyException()
+        : base("El recurso fue modificado por otro proceso. Vuelve a intentarlo.") { }
+}
+
+// 400
+public sealed class BusinessRuleException : DomainException
+{
+    public BusinessRuleException(string message) : base(message) { }
 }

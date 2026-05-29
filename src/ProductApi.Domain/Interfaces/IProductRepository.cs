@@ -1,19 +1,28 @@
-using ProductApi.Domain.Entities;
+﻿using ProductApi.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace ProductApi.Domain.Interfaces;
-
-/// <summary>
-/// Contrato del repositorio de productos.
-/// Principio D de SOLID: la Application Layer depende de esta abstracción,
-/// no de la implementación concreta (InMemory, EF Core, etc.).
-/// </summary>
-public interface IProductRepository
+namespace ProductApi.Domain.Interfaces
 {
-    Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-    Task<Product> AddAsync(Product product, CancellationToken cancellationToken = default);
-    Task<Product> UpdateAsync(Product product, CancellationToken cancellationToken = default);
-    Task DeleteAsync(int id, CancellationToken cancellationToken = default);
-    Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
-    Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+    // SOLID - DIP (Dependency Inversion Principle):
+    // Las capas superiores (Application) dependen de esta abstracción,
+    // nunca de la implementación concreta (InMemoryProductRepository).
+    //
+    // SOLID - ISP (Interface Segregation Principle):
+    // La interfaz expone solo las operaciones que los consumidores necesitan
+    public interface IProductRepository
+    {
+        Task<(IEnumerable<Product> Items, int TotalCount)> GetAllAsync(
+       int page, int pageSize,
+       string? nameFilter,
+       string? sortBy, bool sortDescending,
+       CancellationToken ct = default);
+
+        Task<Product?> GetByIdAsync(int id, CancellationToken ct = default);
+        Task<Product> CreateAsync(Product product, CancellationToken ct = default);
+        Task<Product?> UpdateAsync(Product product, CancellationToken ct = default);
+        Task<bool> DeleteAsync(int id, CancellationToken ct = default);
+        Task<bool> ExistsAsync(int id, CancellationToken ct = default);
+    }
 }

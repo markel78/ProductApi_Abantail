@@ -1,220 +1,118 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProductApi.Application.DTOs;
 using ProductApi.Application.Interfaces;
-using ProductApi.Application.Mappings;
+using ProductApi.Domain.Entities;
 using ProductApi.Domain.Exceptions;
 using ProductApi.Domain.Interfaces;
 
 namespace ProductApi.Application.Services;
 
-/// <summary>
-/// Servicio que implementa los use-cases de producto.
-/// Principio S (Single Responsibility): sólo contiene lógica de negocio.
-/// Principio D (Dependency Inversion): depende de IProductRepository, no de la implementación.
-/// </summary>
+// SRP: este servicio solo orquesta los casos de uso, no persiste ni serializa
+// OCP: para añadir funcionalidad nueva solo añado métodos, no toco lo existente
+// Patrón Service Layer: la lógica de negocio vive aquí, fuera del controlador
+// ToDto: convierte la entidad interna en lo que el cliente ve
 public sealed class ProductService : IProductService
 {
-    private readonly IProductRepository _repository;
+    private readonly IProductRepository _repo;
     private readonly ILogger<ProductService> _logger;
 
-    public ProductService(IProductRepository repository, ILogger<ProductService> logger)
+    public ProductService(IProductRepository repo, ILogger<ProductService> logger)
     {
-        _repository = repository;
+        _repo = repo;
         _logger = logger;
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // GET ALL (paginación + filtro + ordenación)
-    // ──────────────────────────────────────────────────────────────────────────
-    public async Task<PagedResult<ProductDto>> GetAllAsync(
-        ProductQueryParams query,
-        CancellationToken cancellationToken = default)
+    public async Task<PagedResultDto<ProductResponseDto>> GetAllAsync(
+        int page, int pageSize, string? nameFilter,
+        string? sortBy, bool sortDescending, CancellationToken ct = default)
     {
-        _logger.LogInformation(
-            "Getting products. Page={Page}, PageSize={PageSize}, Filter={Filter}, SortBy={SortBy} {SortOrder}",
-            query.Page, query.PageSize, query.NameFilter, query.SortBy, query.SortOrder);
+        _logger.LogInformation("GetAll --> page={Page} size={Size} filter={Filter}",
+            page, pageSize, nameFilter);
 
-        try
-        {
-            var all = await _repository.GetAllAsync(cancellationToken);
+        var (items, total) = await _repo.GetAllAsync(
+            page, pageSize, nameFilter, sortBy, sortDescending, ct);
 
-            // Filtrado
-            if (!string.IsNullOrWhiteSpace(query.NameFilter))
-                all = all.Where(p => p.Name.Contains(query.NameFilter, StringComparison.OrdinalIgnoreCase));
-
-            if (query.MinPrice.HasValue)
-                all = all.Where(p => p.Price >= query.MinPrice.Value);
-
-            if (query.MaxPrice.HasValue)
-                all = all.Where(p => p.Price <= query.MaxPrice.Value);
-
-            // Ordenación
-            all = (query.SortBy.ToLowerInvariant(), query.SortOrder.ToLowerInvariant()) switch
-            {
-                ("name",  "asc")  => all.OrderBy(p => p.Name),
-                ("name",  "desc") => all.OrderByDescending(p => p.Name),
-                ("price", "asc")  => all.OrderBy(p => p.Price),
-                ("price", "desc") => all.OrderByDescending(p => p.Price),
-                ("quantity", "asc")  => all.OrderBy(p => p.Quantity),
-                ("quantity", "desc") => all.OrderByDescending(p => p.Quantity),
-                ("id",    "desc") => all.OrderByDescending(p => p.Id),
-                _                 => all.OrderBy(p => p.Id)
-            };
-
-            var totalCount = all.Count();
-
-            // Paginación
-            var items = all
-                .Skip((query.Page - 1) * query.PageSize)
-                .Take(query.PageSize)
-                .Select(p => p.ToDto())
-                .ToList();
-
-            return new PagedResult<ProductDto>(items, totalCount, query.Page, query.PageSize);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving products list.");
-            throw;
-        }
+        return new PagedResultDto<ProductResponseDto>(
+            Items: items.Select(ToDto),
+            TotalCount: total,
+            Page: page,
+            PageSize: pageSize,
+            TotalPages: (int)Math.Ceiling(total / (double)pageSize)
+        );
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // GET BY ID
-    // ──────────────────────────────────────────────────────────────────────────
-    public async Task<ProductDto> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<ProductResponseDto> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        _logger.LogInformation("Getting product {Id}", id);
-
-        try
-        {
-            var product = await _repository.GetByIdAsync(id, cancellationToken)
-                ?? throw new ProductNotFoundException(id);
-
-            return product.ToDto();
-        }
-        catch (ProductNotFoundException)
-        {
-            _logger.LogWarning("Product {Id} not found.", id);
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving product {Id}.", id);
-            throw;
-        }
+        _logger.LogInformation("GetById --> id={Id}", id);
+        var product = await _repo.GetByIdAsync(id, ct)
+            ?? throw new NotFoundException(nameof(Product), id);
+        return ToDto(product);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // CREATE
-    // ──────────────────────────────────────────────────────────────────────────
-    public async Task<ProductDto> CreateAsync(CreateProductDto dto, CancellationToken cancellationToken = default)
+    public async Task<ProductResponseDto> CreateAsync(CreateProductDto dto, CancellationToken ct = default)
     {
-        _logger.LogInformation("Creating product with name '{Name}'", dto.Name);
-
-        try
+        _logger.LogInformation("Create --> name={Name}", dto.Name);
+        var product = new Product
         {
-            if (await _repository.ExistsByNameAsync(dto.Name, cancellationToken))
-                throw new DuplicateProductException(dto.Name);
-
-            var entity = dto.ToEntity();
-            var created = await _repository.AddAsync(entity, cancellationToken);
-
-            _logger.LogInformation("Product created with id {Id}", created.Id);
-            return created.ToDto();
-        }
-        catch (DuplicateProductException)
-        {
-            _logger.LogWarning("Duplicate product name '{Name}'.", dto.Name);
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error creating product '{Name}'.", dto.Name);
-            throw;
-        }
+            Name = dto.Name,
+            Price = dto.Price,
+            Quantity = dto.Quantity
+        };
+        var created = await _repo.CreateAsync(product, ct);
+        return ToDto(created);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // UPDATE (PUT — reemplazo completo)
-    // ──────────────────────────────────────────────────────────────────────────
-    public async Task<ProductDto> UpdateAsync(int id, UpdateProductDto dto, CancellationToken cancellationToken = default)
+    public async Task<ProductResponseDto> UpdateAsync(int id, UpdateProductDto dto, CancellationToken ct = default)
     {
-        _logger.LogInformation("Updating product {Id}", id);
+        _logger.LogInformation("Update --> id={Id}", id);
+        var existing = await _repo.GetByIdAsync(id, ct)
+            ?? throw new NotFoundException(nameof(Product), id);
 
-        try
-        {
-            var existing = await _repository.GetByIdAsync(id, cancellationToken)
-                ?? throw new ProductNotFoundException(id);
+        existing.Name = dto.Name;
+        existing.Price = dto.Price;
+        existing.Quantity = dto.Quantity;
+        existing.RowVersion = Convert.FromBase64String(dto.RowVersion);
 
-            // Control de concurrencia optimista
-            if (existing.RowVersion != dto.RowVersion)
-                throw new ProductConcurrencyException(id);
-
-            existing.Name = dto.Name;
-            existing.Price = dto.Price;
-            existing.Quantity = dto.Quantity;
-            existing.RowVersion++;
-            existing.UpdatedAt = DateTime.UtcNow;
-
-            var updated = await _repository.UpdateAsync(existing, cancellationToken);
-            _logger.LogInformation("Product {Id} updated.", id);
-            return updated.ToDto();
-        }
-        catch (ProductNotFoundException) { _logger.LogWarning("Product {Id} not found for update.", id); throw; }
-        catch (ProductConcurrencyException) { _logger.LogWarning("Concurrency conflict on product {Id}.", id); throw; }
-        catch (Exception ex) { _logger.LogError(ex, "Error updating product {Id}.", id); throw; }
+        var updated = await _repo.UpdateAsync(existing, ct)
+            ?? throw new NotFoundException(nameof(Product), id);
+        return ToDto(updated);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // PATCH (actualización parcial)
-    // ──────────────────────────────────────────────────────────────────────────
-    public async Task<ProductDto> PatchAsync(int id, PatchProductDto dto, CancellationToken cancellationToken = default)
+    public async Task<ProductResponseDto> PatchAsync(int id, PatchProductDto dto, CancellationToken ct = default)
     {
-        _logger.LogInformation("Patching product {Id}", id);
+        _logger.LogInformation("Patch --> id={Id}", id);
+        var existing = await _repo.GetByIdAsync(id, ct)
+            ?? throw new NotFoundException(nameof(Product), id);
 
-        try
-        {
-            var existing = await _repository.GetByIdAsync(id, cancellationToken)
-                ?? throw new ProductNotFoundException(id);
+        if (dto.Name is not null) existing.Name = dto.Name;
+        if (dto.Price is not null) existing.Price = dto.Price.Value;
+        if (dto.Quantity is not null) existing.Quantity = dto.Quantity.Value;
+        existing.RowVersion = Convert.FromBase64String(dto.RowVersion);
 
-            // Control de concurrencia optimista
-            if (existing.RowVersion != dto.RowVersion)
-                throw new ProductConcurrencyException(id);
-
-            // Solo se actualizan los campos que vienen informados
-            if (dto.Name is not null)     existing.Name     = dto.Name;
-            if (dto.Price.HasValue)       existing.Price    = dto.Price.Value;
-            if (dto.Quantity.HasValue)    existing.Quantity = dto.Quantity.Value;
-
-            existing.RowVersion++;
-            existing.UpdatedAt = DateTime.UtcNow;
-
-            var patched = await _repository.UpdateAsync(existing, cancellationToken);
-            _logger.LogInformation("Product {Id} patched.", id);
-            return patched.ToDto();
-        }
-        catch (ProductNotFoundException) { _logger.LogWarning("Product {Id} not found for patch.", id); throw; }
-        catch (ProductConcurrencyException) { _logger.LogWarning("Concurrency conflict on patch for product {Id}.", id); throw; }
-        catch (Exception ex) { _logger.LogError(ex, "Error patching product {Id}.", id); throw; }
+        var updated = await _repo.UpdateAsync(existing, ct)
+            ?? throw new NotFoundException(nameof(Product), id);
+        return ToDto(updated);
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // DELETE
-    // ──────────────────────────────────────────────────────────────────────────
-    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
-        _logger.LogInformation("Deleting product {Id}", id);
-
-        try
-        {
-            if (!await _repository.ExistsAsync(id, cancellationToken))
-                throw new ProductNotFoundException(id);
-
-            await _repository.DeleteAsync(id, cancellationToken);
-            _logger.LogInformation("Product {Id} deleted.", id);
-        }
-        catch (ProductNotFoundException) { _logger.LogWarning("Product {Id} not found for deletion.", id); throw; }
-        catch (Exception ex) { _logger.LogError(ex, "Error deleting product {Id}.", id); throw; }
+        _logger.LogInformation("Delete --> id={Id}", id);
+        var deleted = await _repo.DeleteAsync(id, ct);
+        if (!deleted) throw new NotFoundException(nameof(Product), id);
     }
+
+    public async Task<IEnumerable<ProductResponseDto>> SearchByNameAsync(string name, CancellationToken ct = default)
+    {
+        _logger.LogInformation("SearchByName --> name={Name}", name);
+        var (items, _) = await _repo.GetAllAsync(1, int.MaxValue, name, null, false, ct);
+        return items.Select(ToDto);
+    }
+
+    private static ProductResponseDto ToDto(Product p) => new(
+        Id: p.Id,
+        Name: p.Name,
+        Price: p.Price,
+        Quantity: p.Quantity,
+        RowVersion: Convert.ToBase64String(p.RowVersion)
+    );
 }

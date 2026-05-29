@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "2ari6Pn4Oi0=",
+  "success": true,
+  "projectFilePath": "C:\\Repositorios\\ProductApi\\ProductApi.Application\\ProductApi.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\marke\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.8\\microsoft.extensions.dependencyinjection.abstractions.10.0.8.nupkg.sha512",
+    "C:\\Users\\marke\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.8\\microsoft.extensions.logging.abstractions.10.0.8.nupkg.sha512"
+  ],
+  "logs": []
+}

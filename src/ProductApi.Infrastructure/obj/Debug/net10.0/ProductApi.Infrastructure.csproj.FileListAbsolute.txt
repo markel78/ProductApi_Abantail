@@ -1,0 +1,16 @@
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\bin\Debug\net10.0\ProductApi.Infrastructure.deps.json
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\bin\Debug\net10.0\ProductApi.Infrastructure.dll
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\bin\Debug\net10.0\ProductApi.Infrastructure.pdb
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\bin\Debug\net10.0\ProductApi.Domain.dll
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\bin\Debug\net10.0\ProductApi.Domain.pdb
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductApi.Infrastructure.csproj.AssemblyReference.cache
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductApi.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductApi.Infrastructure.AssemblyInfoInputs.cache
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductApi.Infrastructure.AssemblyInfo.cs
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductApi.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductA.D44E8AF8.Up2Date
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductApi.Infrastructure.dll
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\refint\ProductApi.Infrastructure.dll
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductApi.Infrastructure.pdb
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ref\ProductApi.Infrastructure.dll
+C:\Repositorios\ProductApi\ProductApi.Infrastructure\obj\Debug\net10.0\ProductApi.Infrastructure.sourcelink.json

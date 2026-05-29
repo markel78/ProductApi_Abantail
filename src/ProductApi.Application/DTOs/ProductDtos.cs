@@ -1,95 +1,55 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ProductApi.Application.DTOs;
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Response DTOs
-// ──────────────────────────────────────────────────────────────────────────────
-
-/// <summary>DTO de salida para un producto.</summary>
-public record ProductDto(
+public sealed record ProductResponseDto(
     int Id,
     string Name,
     decimal Price,
     int Quantity,
-    uint RowVersion,
-    DateTime CreatedAt,
-    DateTime UpdatedAt
+    string RowVersion
 );
 
-/// <summary>Respuesta paginada genérica.</summary>
-public record PagedResult<T>(
-    IEnumerable<T> Items,
-    int TotalCount,
-    int Page,
-    int PageSize
-)
-{
-    public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
-    public bool HasPreviousPage => Page > 1;
-    public bool HasNextPage => Page < TotalPages;
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Request DTOs
-// ──────────────────────────────────────────────────────────────────────────────
-
-/// <summary>DTO para crear un producto.</summary>
-public record CreateProductDto(
-    [Required, StringLength(200, MinimumLength = 1)]
+public sealed record CreateProductDto(
+    [MinLength(1, ErrorMessage = "El nombre no puede estar vacío."),
+     MaxLength(100, ErrorMessage = "El nombre no puede superar 100 caracteres.")]
     string Name,
 
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
+    [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor que 0")]
     decimal Price,
 
-    [Range(0, int.MaxValue, ErrorMessage = "Quantity cannot be negative.")]
+    [Range(0, int.MaxValue, ErrorMessage = "La cantidad no puede ser negativa")]
     int Quantity
 );
 
-/// <summary>DTO para reemplazar un producto completo (PUT).</summary>
-public record UpdateProductDto(
-    [Required, StringLength(200, MinimumLength = 1)]
+public sealed record UpdateProductDto(
+    [MinLength(1, ErrorMessage = "El nombre no puede estar vacío."),
+     MaxLength(100, ErrorMessage = "El nombre no puede superar 100 caracteres.")]
     string Name,
 
-    [Range(0.01, double.MaxValue)]
+    [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor que 0")]
     decimal Price,
 
-    [Range(0, int.MaxValue)]
+    [Range(0, int.MaxValue, ErrorMessage = "La cantidad no puede ser negativa")]
     int Quantity,
 
-    /// <summary>RowVersion actual para control de concurrencia optimista.</summary>
-    [Required]
-    uint RowVersion
+    [Required(ErrorMessage = "El RowVersion es obligatorio.")]
+    string RowVersion
 );
 
-/// <summary>DTO para actualización parcial (PATCH). Todos los campos son opcionales.</summary>
-public record PatchProductDto(
-    [StringLength(200, MinimumLength = 1)]
+public sealed record PatchProductDto(
     string? Name,
-
-    [Range(0.01, double.MaxValue)]
     decimal? Price,
-
-    [Range(0, int.MaxValue)]
     int? Quantity,
 
-    /// <summary>RowVersion actual para control de concurrencia optimista.</summary>
-    [Required]
-    uint RowVersion
+    [Required(ErrorMessage = "El RowVersion es obligatorio.")]
+    string RowVersion
 );
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Query parameters
-// ──────────────────────────────────────────────────────────────────────────────
-
-/// <summary>Parámetros de consulta para listado con paginación, filtro y ordenación.</summary>
-public record ProductQueryParams
-{
-    public int Page { get; init; } = 1;
-    public int PageSize { get; init; } = 10;
-    public string? NameFilter { get; init; }
-    public decimal? MinPrice { get; init; }
-    public decimal? MaxPrice { get; init; }
-    public string SortBy { get; init; } = "id";
-    public string SortOrder { get; init; } = "asc";
-}
+public sealed record PagedResultDto<T>(
+    IEnumerable<T> Items,
+    int TotalCount,
+    int Page,
+    int PageSize,
+    int TotalPages
+);

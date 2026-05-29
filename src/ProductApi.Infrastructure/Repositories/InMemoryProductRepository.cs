@@ -1,28 +1,20 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ProductApi.Domain.Entities;
+using ProductApi.Domain.Exceptions;
 using ProductApi.Domain.Interfaces;
 
 namespace ProductApi.Infrastructure.Repositories;
 
-/// <summary>
-/// Implementación en memoria del repositorio de productos.
-/// Usa una lista estática con bloqueo para simular acceso concurrente.
-///
-/// Patrón Repository: encapsula toda la lógica de acceso a datos.
-/// Principio O de SOLID: para cambiar a EF Core basta con crear
-/// EfProductRepository : IProductRepository sin tocar ninguna otra capa.
-/// </summary>
+// Repositorio en memoria — almacena los productos en una lista estática
+// Si mañana quiero usar SQL Server, creo EfProductRepository con la misma
+// interfaz y cambio una línea en Program.cs. El resto no se toca.
+// LSP: InMemoryProductRepository y EfProductRepository son intercambiables
+// porque las dos cumplen el mismo contrato — IProductRepository
 public sealed class InMemoryProductRepository : IProductRepository
 {
-    // Estado estático compartido entre todas las instancias (simula una BD)
-    private static readonly List<Product> _store = new()
-    {
-        new Product { Id = 1, Name = "Laptop Pro",   Price = 1299.99m, Quantity = 15, RowVersion = 1 },
-        new Product { Id = 2, Name = "Wireless Mouse", Price = 29.99m, Quantity = 100, RowVersion = 1 },
-        new Product { Id = 3, Name = "USB-C Hub",    Price = 49.99m,  Quantity = 50, RowVersion = 1 }
-    };
-    private static int _nextId = 4;
-    private static readonly SemaphoreSlim _lock = new(1, 1);
+    private static readonly List<Product> _store = [];
+    private static int _nextId = 1;
+    private static readonly Lock _lock = new();
 
     private readonly ILogger<InMemoryProductRepository> _logger;
 
@@ -31,95 +23,102 @@ public sealed class InMemoryProductRepository : IProductRepository
         _logger = logger;
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken = default)
+    public Task<(IEnumerable<Product> Items, int TotalCount)> GetAllAsync(
+        int page, int pageSize, string? nameFilter,
+        string? sortBy, bool sortDescending,
+        CancellationToken ct = default)
     {
-        _logger.LogDebug("Repository: GetAll");
-        await _lock.WaitAsync(cancellationToken);
-        try
+        _logger.LogInformation("Repository.GetAll");
+        lock (_lock)
         {
-            // Devolvemos copias para evitar mutación externa
-            return _store.Select(Clone).ToList();
+            var query = _store.AsQueryable();
+
+            // Filtro
+            if (!string.IsNullOrWhiteSpace(nameFilter))
+                query = query.Where(p =>
+                    p.Name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase));
+
+            // Ordenación
+            query = sortBy?.ToLowerInvariant() switch
+            {
+                "name" => sortDescending ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
+                "price" => sortDescending ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
+                "quantity" => sortDescending ? query.OrderByDescending(p => p.Quantity) : query.OrderBy(p => p.Quantity),
+                _ => query.OrderBy(p => p.Id)
+            };
+
+            var total = query.Count();
+
+            // Paginación
+            var items = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return Task.FromResult<(IEnumerable<Product>, int)>((items, total));
         }
-        finally { _lock.Release(); }
     }
 
-    public async Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public Task<Product?> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        _logger.LogDebug("Repository: GetById {Id}", id);
-        await _lock.WaitAsync(cancellationToken);
-        try
+        _logger.LogInformation("Repository.GetById --> id={Id}", id);
+        lock (_lock)
         {
             var product = _store.FirstOrDefault(p => p.Id == id);
-            return product is null ? null : Clone(product);
+            return Task.FromResult(product);
         }
-        finally { _lock.Release(); }
     }
 
-    public async Task<Product> AddAsync(Product product, CancellationToken cancellationToken = default)
+    public Task<Product> CreateAsync(Product product, CancellationToken ct = default)
     {
-        _logger.LogDebug("Repository: Add product '{Name}'", product.Name);
-        await _lock.WaitAsync(cancellationToken);
-        try
+        _logger.LogInformation("Repository.Create --> name={Name}", product.Name);
+        lock (_lock)
         {
             product.Id = _nextId++;
-            product.CreatedAt = DateTime.UtcNow;
-            product.UpdatedAt = DateTime.UtcNow;
-            product.RowVersion = 1;
+            product.RowVersion = BitConverter.GetBytes(DateTime.UtcNow.Ticks);
             _store.Add(product);
-            return Clone(product);
+            return Task.FromResult(product);
         }
-        finally { _lock.Release(); }
     }
 
-    public async Task<Product> UpdateAsync(Product product, CancellationToken cancellationToken = default)
+    public Task<Product?> UpdateAsync(Product product, CancellationToken ct = default)
     {
-        _logger.LogDebug("Repository: Update product {Id}", product.Id);
-        await _lock.WaitAsync(cancellationToken);
-        try
+        _logger.LogInformation("Repository.Update --> id={Id}", product.Id);
+        lock (_lock)
         {
-            var index = _store.FindIndex(p => p.Id == product.Id);
-            if (index < 0) throw new InvalidOperationException($"Product {product.Id} not found in store.");
-            _store[index] = product;
-            return Clone(product);
+            var existing = _store.FirstOrDefault(p => p.Id == product.Id);
+            if (existing is null) return Task.FromResult<Product?>(null);
+
+            // Control de concurrencia optimista
+            if (!existing.RowVersion.SequenceEqual(product.RowVersion))
+                throw new ConcurrencyException();
+
+            existing.Name = product.Name;
+            existing.Price = product.Price;
+            existing.Quantity = product.Quantity;
+            existing.RowVersion = BitConverter.GetBytes(DateTime.UtcNow.Ticks);
+
+            return Task.FromResult<Product?>(existing);
         }
-        finally { _lock.Release(); }
     }
 
-    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public Task<bool> DeleteAsync(int id, CancellationToken ct = default)
     {
-        _logger.LogDebug("Repository: Delete product {Id}", id);
-        await _lock.WaitAsync(cancellationToken);
-        try
+        _logger.LogInformation("Repository.Delete --> id={Id}", id);
+        lock (_lock)
         {
-            var product = _store.FirstOrDefault(p => p.Id == id);
-            if (product is not null) _store.Remove(product);
+            var existing = _store.FirstOrDefault(p => p.Id == id);
+            if (existing is null) return Task.FromResult(false);
+            _store.Remove(existing);
+            return Task.FromResult(true);
         }
-        finally { _lock.Release(); }
     }
 
-    public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default)
+    public Task<bool> ExistsAsync(int id, CancellationToken ct = default)
     {
-        await _lock.WaitAsync(cancellationToken);
-        try { return _store.Any(p => p.Id == id); }
-        finally { _lock.Release(); }
+        lock (_lock)
+        {
+            return Task.FromResult(_store.Any(p => p.Id == id));
+        }
     }
-
-    public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default)
-    {
-        await _lock.WaitAsync(cancellationToken);
-        try { return _store.Any(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)); }
-        finally { _lock.Release(); }
-    }
-
-    // ── Helpers ──────────────────────────────────────────────────────────────
-    private static Product Clone(Product p) => new()
-    {
-        Id         = p.Id,
-        Name       = p.Name,
-        Price      = p.Price,
-        Quantity   = p.Quantity,
-        RowVersion = p.RowVersion,
-        CreatedAt  = p.CreatedAt,
-        UpdatedAt  = p.UpdatedAt
-    };
 }
